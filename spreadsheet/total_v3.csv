@@ -1,0 +1,35 @@
+,,Internal source,Values,,,,,,,,,,,
+,,Source 1 - NZT matches,,Source 2 - NZDPU matches,,Source 2 and 3 - NZDPU and Climate Arc matches,,Source 3 - Climate Arc matches,,Source 4 - Member reports,,Grand Total,,
+Scopes,Type,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,TODO
+Scope 1,Company,,,"103,212,943",143,"308,167,017",116,"594,175,055",150,"54,008",19,"1,005,609,023",428,"Include all, as no city and region duplication was found"
+Scope 1,Financial Institution,,,"94,107",3,,,"30,131",2,,,"124,238",5,Include all
+Scope 1,Healthcare,,,,,,,,,"72,697",4,"72,697",4,Include all
+Scope 1,Other,,,,,,,,,63,2,63,2,List separately
+Scope 1,SME,,,,,"1,728,000",1,"38,000,000",1,,,"39,728,000",2,Include all
+"Scopes 1, 2, 3",Company,"618,642",1,,,,,,,,,"618,642",1,Include all
+"Scopes 1, 2, 3",Healthcare,,,,,,,,,"147,436",3,"147,436",3,Include all
+"Scopes 1, 2, 3",Higher Education,,,,,,,,,"2,040",1,"2,040",1,Exclude all
+"Scopes 1, 2, 3",Other,,,,,,,,,"18,500",1,"18,500",1,Exclude all
+"Scopes 1, 2, 3",SME,"20,367",1,,,,,,,,,"20,367",1,Exclude all
+Grand Total,,"639,009",2,"103,307,050",146,"309,895,017",117,"632,205,186",153,"294,744",30,"1,046,341,006",448,Exclude all
+,,,,,,,,,,,,,,Exclude all
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,Internal source,Values,,,,,,,,,,,
+,,Source 2 - NZDPU matches,,Source 2 and 3 - NZDPU and Climate Arc matches,,Source 3 - Climate Arc matches,,Source 4 - Member reports,,Grand Total,,,,
+Scopes,Type,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,,,
+Scope 1,Company,"103,212,943",143,"308,167,017",116,"594,175,055",150,"54,008",19,"1,005,609,023",428,,,
+Scope 1,Healthcare,,,,,,,"72,697",4,"72,697",4,,,
+Scope 1,Other,,,,,,,63,2,63,2,,,
+Scope 1,SME,,,"1,728,000",1,"38,000,000",1,,,"39,728,000",2,,,
+Grand Total,,"103,212,943",143,"309,895,017",117,"632,175,055",151,"126,768",25,"1,045,409,783",436,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,0.00%,0.00%,
+,,,,,,,,,,,,,,
+,,Internal source,Values,,,,,,,,,,,
+,,Source 2 - NZDPU matches,,Source 3 - Climate Arc matches,,Grand Total,,,,,,,,
+Scopes,Type,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,SUM of Emissions,COUNTA of Name,,,,,,,
+Scope 1,Financial Institution,"94,107",3,"30,131",2,"124,238",5,,,,,,,
+Grand Total,,"94,107",3,"30,131",2,"124,238",5,,,,,,,
