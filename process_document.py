@@ -7,14 +7,14 @@ from typing import List, Dict
 import glob
 import pandas as pd
 import re
+import os
 
 load_dotenv()
 
 class DocumentProcessor:
-    def __init__(self, base_directory: str):
-        self.base_directory = base_directory
-        self.pdf_directory = os.path.join(base_directory, "pdfs")
-        self.csv_directory = os.path.join(base_directory, "spreadsheet")
+    def __init__(self):
+        self.base_directory = os.path.abspath(".")
+        self.csv_directory = os.path.join(self.base_directory, "spreadsheet")
         
         self.text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n", "\n", ". ", "? ", "! "],
@@ -60,31 +60,6 @@ class DocumentProcessor:
         
         return all_chunks
 
-    def load_pdfs(self) -> List[Dict]:
-        all_chunks = []
-        if os.path.exists(self.pdf_directory):
-            for pdf_path in glob.glob(f"{self.pdf_directory}/*.pdf"):
-                loader = PyPDFLoader(pdf_path)
-                pages = loader.load()
-                
-                for page in pages:
-                    text = page.page_content
-                    paragraphs = self.text_splitter.split_text(text)
-                    
-                    for para in paragraphs:
-                        if len(self.clean_text(para)) < 50:  # Skip very short paragraphs
-                            continue
-                            
-                        all_chunks.append({
-                            "content": self.clean_text(para),
-                            "metadata": {
-                                "source_file": os.path.basename(pdf_path),
-                                "source_type": "pdf",
-                                "page": page.metadata.get("page", 0)
-                            }
-                        })
-        return all_chunks
-
     def create_embeddings(self, chunks: List[Dict]):
         embeddings_list = []
         for chunk in chunks:
@@ -100,19 +75,11 @@ class DocumentProcessor:
         return embeddings_list
 
 def main():
-    base_dir = "c:/Users/Bubble/Desktop/Treehacks2025/bas_labs"
-    processor = DocumentProcessor(base_dir)
-    
+    processor = DocumentProcessor()
     print("Starting document processing...")
-    # case: pdfs
-    pdf_chunks = processor.load_pdfs()
-    print(f"Created {len(pdf_chunks)} chunks from PDFs")
-
     # default: csvs
-    csv_chunks = processor.load_csvs()
-    print(f"Created {len(csv_chunks)} chunks from CSVs")
-    
-    all_chunks = pdf_chunks + csv_chunks
+    all_chunks = processor.load_csvs()
+    print(f"Created {len(all_chunks)} chunks from CSVs")
     print("1) Created chunks. Now creating embeddings...")
     embeddings_data = processor.create_embeddings(all_chunks)
     print(f"2) Embeddings created for {len(embeddings_data)} total chunks")
