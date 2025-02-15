@@ -1,7 +1,18 @@
-//File: example/example-node.ts
-
 import { z } from "zod";
 import axios from "axios";
+import { PythonShell} from 'python-shell';
+import * as path from 'path';
+
+
+// this.pythonShell = new PythonShell('worker.py', {
+//   mode: 'text',
+//   pythonPath: 'python3',
+//   pythonOptions: ['-u'],
+//   scriptPath: './python_scripts'
+// });
+type PythonShellOptions = {
+  args: string[];
+};
 
 import {
   defineDAINService,
@@ -10,188 +21,97 @@ import {
 
 import { CardUIBuilder, TableUIBuilder, MapUIBuilder } from "@dainprotocol/utils";
 
-const getWeatherEmoji = (temperature: number): string => {
-  if (temperature <= 0) return '🥶';
-  if (temperature <= 10) return '❄️';
-  if (temperature <= 20) return '⛅';
-  if (temperature <= 25) return '☀️';
-  if (temperature <= 30) return '🌞';
-  return '🔥';
-};
-
-const getWeatherConfig: ToolConfig = {
-  id: "get-weather",
-  name: "Get Weather",
-  description: "Fetches current weather for a city",
+const find_company_climate_initiatives: ToolConfig = {
+  id: "net_zero_tracker",
+  name: "Find climate initiatives",
+  description: "Finds the climate initiatives a company is doing",
   input: z
     .object({
-      locationName: z.string().describe("Location name"),
-      latitude: z.number().describe("Latitude coordinate"),
-      longitude: z.number().describe("Longitude coordinate"),
+      companyName: z.string().describe("Company name"),
     })
-    .describe("Input parameters for the weather request"),
+    .describe("Input parameters for the company climate initiative request"),
   output: z
     .object({
-      temperature: z.number().describe("Current temperature in Celsius"),
-      windSpeed: z.number().describe("Current wind speed in km/h"),
-    })
-    .describe("Current weather information"),
+      company_climate_information: z.string().describe("Company information on climate initiatives"),
+    }),
   pricing: { pricePerUse: 0, currency: "USD" },
-  handler: async ({ locationName, latitude, longitude }, agentInfo, context) => {
+
+  handler: async ({ companyName }, agentInfo, context) => {
     console.log(
-      `User / Agent ${agentInfo.id} requested weather at ${locationName} (${latitude},${longitude})`
+      `User / Agent ${agentInfo.id} requested information from net_zero_tracker for company ${companyName}`
     );
+    
 
+    function scrape_netzero(companyName: string): Promise<string> {
+      const options: PythonShellOptions = {
+        args: [companyName],
+      };
+      const scriptPath = path.join(__dirname, 'scrape_netzero.py');
+    
+      return PythonShell.run(scriptPath, options) // Using Promise-based API
+        .then((result) => {
+          // Since result is an array of strings (one for each printed line),
+          // we join them together
+          return result.join('\n');
+        })
+        .catch((err) => {
+          console.error("Error executing Python script:", err);
+          throw err;2 
+        });
+    }
+    
 
-    const response = await axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,wind_speed_10m`
-    );
+    let company_info: string; 
+    
+    try {
+      company_info = await scrape_netzero(companyName);
+      console.log("Python script result:", company_info);
+    } catch (error) {
+        console.error("Error:", error);
+    }
 
-    const { temperature_2m, wind_speed_10m } = response.data.current;
-    const weatherEmoji = getWeatherEmoji(temperature_2m);
+    const cardUI = new CardUIBuilder()
+      .title("Findings")
+      .content("?")
+      .build();
+
 
     return {
-      text: `The current temperature in ${locationName} is ${temperature_2m}°C with wind speed of ${wind_speed_10m} km/h`,
+      text: `The information about the company ${companyName} is as follows: ${company_info}`,
       data: {
-        temperature: temperature_2m,
-        windSpeed: wind_speed_10m,
+        company_climate_information: company_info,
       },
-      ui: new CardUIBuilder()
-        .setRenderMode("page")
-        .title(`Current Weather in ${locationName} ${weatherEmoji}`)
-        .addChild(new MapUIBuilder()
-          .setInitialView(latitude, longitude, 10)
-          .setMapStyle('mapbox://styles/mapbox/streets-v12')
-          .addMarkers([
-            {
-              latitude,
-              longitude,
-              title: locationName,
-              description: `Temperature: ${temperature_2m}°C\nWind: ${wind_speed_10m} km/h`,
-              text: `${locationName} ${weatherEmoji}`,
-            }
-          ])
-          .build())
-        .content(`Temperature: ${temperature_2m}°C\nWind Speed: ${wind_speed_10m} km/h`)
-        .build(),
+      ui: cardUI,
     };
   },
 };
 
-const getWeatherForecastConfig: ToolConfig = {
-  id: "get-weather-forecast",
-  name: "Get Weather Forecast",
-  description: "Fetches hourly weather forecast",
-  input: z
-    .object({
-      locationName: z.string().describe("Location name"),
-      latitude: z.number().describe("Latitude coordinate"),
-      longitude: z.number().describe("Longitude coordinate"),
-    })
-    .describe("Input parameters for the forecast request"),
-  output: z
-    .object({
-      times: z.array(z.string()).describe("Forecast times"),
-      temperatures: z
-        .array(z.number())
-        .describe("Temperature forecasts in Celsius"),
-      windSpeeds: z.array(z.number()).describe("Wind speed forecasts in km/h"),
-      humidity: z
-        .array(z.number())
-        .describe("Relative humidity forecasts in %"),
-    })
-    .describe("Hourly weather forecast"),
-  pricing: { pricePerUse: 0, currency: "USD" },
-  handler: async ({ locationName, latitude, longitude }, agentInfo, context) => {
-    console.log(
-      `User / Agent ${agentInfo.id} requested forecast at ${locationName} (${latitude},${longitude})`
-    );
-
-
-    const response = await axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`
-    );
-
-    const { time, temperature_2m, wind_speed_10m, relative_humidity_2m } =
-      response.data.hourly;
-
-    // Limit to first 24 hours of forecast data
-    const limitedTime = time.slice(0, 24);
-    const limitedTemp = temperature_2m.slice(0, 24);
-    const limitedWind = wind_speed_10m.slice(0, 24);
-    const limitedHumidity = relative_humidity_2m.slice(0, 24);
-
-    const weatherEmoji = getWeatherEmoji(limitedTemp[0]);
-
-    return {
-      text: `Weather forecast for ${locationName} available for the next 24 hours`,
-      data: {
-        times: limitedTime,
-        temperatures: limitedTemp,
-        windSpeeds: limitedWind,
-        humidity: limitedHumidity,
-      },
-      ui: new CardUIBuilder()
-        .setRenderMode("page")
-        .title(`Weather Forecast for ${locationName} ${weatherEmoji}`)
-        .addChild(new MapUIBuilder()
-          .setInitialView(latitude, longitude, 10)
-          .setMapStyle('mapbox://styles/mapbox/streets-v12')
-          .addMarkers([
-            {
-              latitude,
-              longitude,
-              title: locationName,
-              description: `Temperature: ${limitedTemp[0]}°C\nWind: ${limitedWind[0]} km/h`,
-              text: `${locationName} ${weatherEmoji}`,
-            }
-          ])
-          .build())
-        .addChild(new TableUIBuilder()
-          .addColumns([
-            { key: 'time', header: 'Time', type: 'string' },
-            { key: 'temperature', header: 'Temperature (°C)', type: 'number' },
-            { key: 'windSpeed', header: 'Wind Speed (km/h)', type: 'number' },
-            { key: 'humidity', header: 'Humidity (%)', type: 'number' },
-          ])
-          .rows(limitedTime.map((t: string, i: number) => ({
-            time: new Date(t).toLocaleString(),
-            temperature: limitedTemp[i],
-            windSpeed: limitedWind[i],
-            humidity: limitedHumidity[i],
-          })))
-          .build())
-        .build(),
-    };
-  },
-};
 
 const dainService = defineDAINService({
   metadata: {
-    title: "Weather DAIN Service",
+    title: "Climate match making DAIN Service",
     description:
-      "A DAIN service for current weather and forecasts using Open-Meteo API",
+      "A DAIN service for matching companies with climate initiatives using Selenium",
     version: "1.0.0",
-    author: "Your Name",
-    tags: ["weather", "forecast", "dain"],
+    author: "Suze van Adrichem and Alice Heiman",
+    tags: ["climate"],
     logo: "https://cdn-icons-png.flaticon.com/512/252/252035.png",
   },
   exampleQueries: [
    {
-    category: "Weather",
+    category: "Climate",
     queries: [
-      "What is the weather in Tokyo?",
-      "What is the weather in San Francisco?",
-      "What is the weather in London?",
+      "What climate initiatives could my company Amazon use?",
+      "We're a small company Scrapybara. What climate initiatives could we consider?",
     ],
    }
   ],
   identity: {
     apiKey: process.env.DAIN_API_KEY,
   },
-  tools: [getWeatherConfig, getWeatherForecastConfig],
+  tools: [find_company_climate_initiatives],
 });
 
 dainService.startNode({ port: 2022 }).then(() => {
-  console.log("Weather DAIN Service is running on port 2022");
+  console.log("Climate match making DAIN Service is running on port 2022");
 });

@@ -1,0 +1,33 @@
+last_updated,2024-09-04 11:27:45,id_code,COM-0121,name,Amazon,country,USA,geographic_region,North America,actor_type,Company,isin_id,US0231351067,race_to_zero_member,Yes,website,http://www.amazon.com,private_company,No,end_target,Net zero,end_target_percentage_reduction,,end_target_baseline_year,,end_target_intensity_unit,,end_target_baseline_emissions,,end_target_target_emissions,,end_target_bau_emissions,,end_target_other,,end_target_year,2040,end_target_status,In corporate strategy,status_date,2019,interim_target,No target,interim_target_percentage_reduction,,interim_target_baseline_year,,interim_target_intensity_unit,,interim_target_baseline_emissions,,interim_target_target_emissions,,interim_target_bau_emissions,,interim_target_other,,interim_target_year,,end_target_text,In 2019, we co-founded and committed to The Climate Pledge—our goal to reach net-zero carbon emissions by 2040, 10 years ahead of the Paris Agreement. (p. 9)
+http://archive.today/KM25f,interim_target_text,,target_notes,Amazon also intends to  have "[a]t least 100,000 electric delivery vans on the road by 2030, from Rivian and other manufacturers" (p.6)
+,source_url,https://web.archive.org/web/20250121161732/,gasses_coverage,Carbon dioxide only,territorial_emissions,,consumption_emissions,,international_aviation,,international_shipping,,scope_1,Not Specified,scope_2,Not Specified,scope_3,Partial,interim_scope_1,Not Specified,interim_scope_2,Not Specified,interim_scope_3,Not Specified,historical_emissions,No,coverage_notes,Gases: "our goal to reach net-zero carbon emissions by 2040" (p. 9)
+
+Because Scope 3 emissions are beyond our direct operational 
+control, the efforts our suppliers take to reduce their 
+emissions help us progress toward our ambition to achieve 
+net-zero carbon emissions by 2040. We will prioritize working 
+with suppliers who are also committed to decarbonization 
+and reaching net-zero carbon emissions. We have identified 
+a list of the highest-emitting suppliers directly supporting 
+our operations, and expect those suppliers, who collectively 
+contribute more than 50% of emissions globally to Amazon’s 
+Scope 3 footprint, to provide a plan for how they will 
+decarbonize their operations and demonstrate real progress 
+over time. pg 13
+,has_plan,Yes,plan_options,Measures for all emission scopes that are covered by the target|Schedule for regular review of measures,reporting_mechanism,Annual reporting,equity,No,accountability,Not Specified,governance_notes,The Climate Pledge:
+Regular Reporting
+Measure and report greenhouse gas emissions on a regular basis https://sustainability.aboutamazon.com/environment/the-climate-pledge
+Equity mentioned 39 times, primary support by donations , Supporting a Just Clean Energy Transition' page 24 https://sustainability.aboutamazon.com/2022-sustainability-report.pdf,carbon_credit_offsets,Yes,carbon_credit_conditions,Avoid social harm|Avoid biodiversity harm|Must be high environmental integrity,max_emission_offset,,conditions_other,,removals_targets,No,cdr,Yes (nature-based removals e.g. Forestation, soil carbon enhancement),sinks_and_credits_notes,Amazon is achieving our commitment to The Climate Pledge through two complementary actions: carbon elimination and, for remaining carbon impact that cannot be eliminated, carbon neutralization. First and foremost, we are innovating and investing to eliminate emissions within the value chain of our businesses. Second, we are driving meaningful and necessary actions outside of our value chain, through nature-based and technological solutions, to enable a credible carbon market for companies that will need to neutralize remaining emissions. As stated in The Climate Pledge, these solutions must be additional, quantifiable, real, permanent, and socially-beneficial. https://sustainability.aboutamazon.com/amazon-2021-carbon-neutralization.pdf
+
+Various conditions set for offsetting projects https://sustainability.aboutamazon.com/amazon-2021-carbon-neutralization.pdf
+
+We use nature-based solutions to mitigate carbon emissions outside of our value 
+chain and supplement the carbon reduction efforts we’re driving across our operations.
+
+In parallel to reducing and avoiding emissions throughout 
+our business, we are also investing in carbon neutralization 
+through additional, quantifiable, real, permanent, and 
+socially beneficial offsets. As part of this effort, we are 
+engaging in science-led collaborations to build credible 
+neutralization initiatives that can be deployed at scale in 
+the future.,memberships,,gdp_real,,annual_revenue,524897000000,population,,industry,Retail,sector,,employees,1541000,market_index,,ghg,,inventory_year,2015,higher_net_zero,,coal_exploration,Not applicable,coal_exploration_phaseout_year,,coal_production,Not applicable,coal_production_phaseout_year,,coal_use,No phaseout,coal_use_phaseout_year,,coal_pathways,,coal_pathways_other,,coal_notes,,coal_source_links,https://sustainability.aboutamazon.com/2022-sustainability-report.pdf,oil_exploration,Not applicable,oil_exploration_phaseout_year,,oil_production,Not applicable,oil_production_phaseout_year,,oil_use,No phaseout,oil_use_phaseout_year,,oil_pathways,,oil_pathways_other,,oil_notes,Power our operations with 100% renewable energy by 2030.,oil_source_links,https://sustainability.aboutamazon.com/2022-sustainability-report.pdf,gas_exploration,Not applicable,gas_exploration_phaseout_year,,gas_production,Not applicable,gas_production_phaseout_year,,gas_use,No phaseout,gas_use_phaseout_year,,gas_pathways,,gas_pathways_other,,gas_notes,Power our operations with 100% renewable energy by 2030.,gas_source_links,https://sustainability.aboutamazon.com/2022-sustainability-report.pdf,slug,amazon-com-0121,country_name,United States of America,gcap_id,GCAP18834,signpost_climate_laws_label,,signpost_climate_laws_url,,signpost_eciu_label,,signpost_eciu_url,,signpost_influence_map_label,C+,signpost_influence_map_url,https://lobbymap.org/company/Amazon-6ef39ea5f5d349615d709268befdb436,signpost_climate_action_tracker_label,,signpost_climate_action_tracker_url,,signpost_new_climate_label,Low Integrity,signpost_new_climate_url,https://newclimate.org/sites/default/files/2023-04/NewClimate_CorporateClimateResponsibilityMonitor2023_Feb23.pdf#page=74,signpost_climate_watch_url,,signpost_ccnm_url,,end_target_status_slug,in-corporate-strategy
