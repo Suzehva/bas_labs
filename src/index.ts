@@ -1,8 +1,11 @@
 import { arrayOutputType, z } from "zod";
 import axios from "axios";
-import { PythonShell} from 'python-shell';
+import { PythonShell } from 'python-shell';
 import * as path from 'path';
+// require('dotenv').config({ path: '.env.treehacks' });
 
+// const apiKey = process.env.DAIN_API_KEY;
+// console.log(apiKey);
 
 // this.pythonShell = new PythonShell('worker.py', {
 //   mode: 'text',
@@ -41,14 +44,14 @@ const find_company_climate_initiatives: ToolConfig = {
     console.log(
       `User / Agent ${agentInfo.id} requested information from net_zero_tracker for company ${companyName}`
     );
-    
+
 
     function scrape_netzero(companyName: string): Promise<string> {
       const options: PythonShellOptions = {
         args: [companyName],
       };
       const scriptPath = path.join(__dirname, 'scrape_netzero.py');
-    
+
       return PythonShell.run(scriptPath, options) // Using Promise-based API
         .then((result) => {
           // Since result is an array of strings (one for each printed line),
@@ -57,17 +60,17 @@ const find_company_climate_initiatives: ToolConfig = {
         })
         .catch((err) => {
           console.error("Error executing Python script:", err);
-          throw err;2 
+          throw err; 2
         });
     }
-    
 
-    let company_info: string; 
+
+    let company_info: string;
     try {
       company_info = await scrape_netzero(companyName);
       console.log("Python script result:", company_info);
     } catch (error) {
-        console.error("Error:", error);
+      console.error("Error:", error);
     }
 
     // const tableUI = new TableUIBuilder()
@@ -100,9 +103,9 @@ const find_company_climate_initiatives: ToolConfig = {
       .addChild(one_climate_initiative).content(company_info)
       .addChild(one_climate_initiative).content(company_info)
       .addChild(one_climate_initiative).content(company_info)
-      
+
       //.addChild(tableUI)
-      
+
       .build();
 
     // const gridLayout = new LayoutUIBuilder()
@@ -145,18 +148,18 @@ const find_similar_companies: ToolConfig = {
     }),
   pricing: { pricePerUse: 0, currency: "USD" },
 
-  handler: async ({ sector,  country }, agentInfo, context) => {
+  handler: async ({ sector, country }, agentInfo, context) => {
     console.log(
       `User / Agent ${agentInfo.id} requested information from nzdpu to find similar compabies`
     );
-    
+
 
     function scrape_nzdpu(sector: string, country: string): Promise<Array<string>> {
       const options: PythonShellOptions = {
         args: [sector, country],
       };
       const scriptPath = path.join(__dirname, 'scrape_nzdpu.py');
-    
+
       return PythonShell.run(scriptPath, options) // Using Promise-based API
         .then((result) => {
           // Since result is an array of strings (one for each printed line),
@@ -165,17 +168,17 @@ const find_similar_companies: ToolConfig = {
         })
         .catch((err) => {
           console.error("Error executing Python script:", err);
-          throw err;2 
+          throw err; 2
         });
     }
-    
 
-    let similar_comps: Array<string>; 
+
+    let similar_comps: Array<string>;
     try {
       similar_comps = await scrape_nzdpu(sector, country);
       console.log("Python script result:", similar_comps);
     } catch (error) {
-        console.error("Error:", error);
+      console.error("Error:", error);
     }
 
     const super_basic_UI = new CardUIBuilder()
@@ -193,6 +196,79 @@ const find_similar_companies: ToolConfig = {
   },
 };
 
+// START: RAG UN
+
+const find_UN_initatives: ToolConfig = {
+  id: "ragun",
+  name: "Find UN collaborative corporate climate initatives",
+  description: "Finds Cooperative Climate Iniatives which are relevant to THE USER based on its description. Invoke this tool to find climate initiatives relevant to THE USER.",
+  input: z
+    .object({
+      search_query: z.string().describe("Description of the company and its sector, mision, and values."),
+    })
+    .describe("The input should encompass the sustainability goals of THE USER to achieve within their sector."),
+  output: z
+    .object({
+      climate_initatives: z.array(z.object({
+        title: z.string(),
+        summary: z.string(),
+        description: z.string(),
+      }).describe("List of company climate initiatives with title, summary, and description")),
+    }),
+  pricing: { pricePerUse: 0, currency: "USD" },
+
+  handler: async ({ search_query }, agentInfo, context) => {
+    console.log(
+      `User / Agent ${agentInfo.id} requested information from UN Collaborative initatives for search query ${search_query}`
+    );
+
+
+    function call_rag_UN(search_query: string): Promise<Array<{ [key: string]: string }>> {
+      const options: PythonShellOptions = {
+        args: [search_query],
+      };
+      const scriptPath = path.join(__dirname, 'call_rag_UN.py');
+
+      return PythonShell.run(scriptPath, options) // Using Promise-based API
+        .then((result) => {
+          // Since result is an array of strings (one for each printed line),
+          // we join them together
+          return JSON.parse(result.join(''));
+        })
+        .catch((err) => {
+          console.error("Error executing Python script:", err);
+          throw err; 2
+        });
+    }
+
+
+    let UN_initatives: Array<{ [key: string]: string }>;
+    try {
+      UN_initatives = await call_rag_UN(search_query);  // Ensure the return type from the function matches
+      console.log("Python script result:", UN_initatives);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    const super_basic_UI = new CardUIBuilder()
+      //.title(`Climate Initiatives for ${companyName}`)
+      //.content(company_info)
+      .build();
+
+    return new DainResponse({
+      text: `This returns the top climate initatives from the UN corporate climate initatives database relevant to THE USER`,
+      data: {
+        climate_initatives: UN_initatives,
+      },
+      ui: super_basic_UI,
+    });
+  },
+};
+
+// END: RAG UN
+
+
+
 interface ServiceContext {
   id: string;              // Unique identifier
   name: string;           // Display name
@@ -205,8 +281,8 @@ const BASContext: ServiceContext = {
   name: "BAS instructions",           // Display name
   description: "Instructions provided to agent BAS",    // Description of the context
   getContextData: async (agentInfo) => {
-    
-  return `
+
+    return `
   You are an agent called BAS. You are helping a company (called THE USER) ideate potential climate initiative that align with the companies mission, sector and location. 
   To do so, you will research other similar companies (called THE INSPIRATIONS) using tools to find and report back information you find. Before you return to the company, fulfill the following requirements:
   1. Present three main topics for climate mitigation specific to THE USER
@@ -234,18 +310,18 @@ const dainService = defineDAINService({
   },
   contexts: [BASContext],
   exampleQueries: [
-   {
-    category: "Climate",
-    queries: [
-      "What climate initiatives could my company Amazon use?",
-      "We're a small company Scrapybara. What climate initiatives could we consider?",
-    ],
-   }
+    {
+      category: "Climate",
+      queries: [
+        "What climate initiatives could my company Amazon use?",
+        "We're a small company Scrapybara. What climate initiatives could we consider?",
+      ],
+    }
   ],
   identity: {
     apiKey: process.env.DAIN_API_KEY,
   },
-  tools: [find_company_climate_initiatives, find_similar_companies],
+  tools: [find_company_climate_initiatives, find_similar_companies, find_UN_initatives],
 });
 
 dainService.startNode({ port: 2022 }).then(() => {

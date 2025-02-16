@@ -8,19 +8,12 @@ import os
 import sys
 import json
 
+
 def scrape_nzdpu(sector: str, country: str) -> list[str]:
-    """
-    Scrapes Net Zero data for a given company and returns the content.
-    
-    Args:
-        company_name (str): Name of the company to search for
-        
-    Returns:
-        str: Content of the downloaded JSON file
-    """
+    """ """
     return ["Amazon", "Delta Airlines", "DAIN"]
-    
-   
+
+
 if __name__ == "__main__":
     # Get company name from command line arguments
     if len(sys.argv) > 2:
@@ -28,7 +21,7 @@ if __name__ == "__main__":
         country = sys.argv[2]
         try:
             content = scrape_nzdpu(sector, country)
-            print(json.dumps(content)) 
+            print(json.dumps(content))
         except Exception as e:
             print(f"Error: {str(e)}", file=sys.stderr)
             sys.exit(1)
