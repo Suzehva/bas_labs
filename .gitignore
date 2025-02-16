@@ -1,5 +1,6 @@
 .venv/*
 hackathon-2024/*
+.env
 
 # Python
 __pycache__/
