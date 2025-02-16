@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+google-generativeai
+>>>>>>> 4672d5dc84887d30bd3c96db5be486d8374707c6
 langgraph>=0.0.15
 langchain>=0.1.0
 langchain-anthropic>=0.0.1
@@ -23,7 +27,14 @@ setuptools
 pypdf2
 pandas>=2.0.0
 sentence-transformers>=2.2.2
+<<<<<<< HEAD
 requests>=2.31.0
 tqdm>=4.66.1
+=======
+selenium
+requests>=2.31.0
+tqdm>=4.66.1
+transformers
+>>>>>>> 4672d5dc84887d30bd3c96db5be486d8374707c6
 numpy>=1.24.0
 scikit-learn>=1.3.0

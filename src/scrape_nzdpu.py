@@ -7,12 +7,15 @@ import time
 import os
 import sys
 import json
+import google.generativeai as genai
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
 
 
 # url https://nzdpu.com/companies?sicsSector=Consumer%20Goods
 
 
-#
 sics_sector_urls = {
     "Consumer Goods": "https://nzdpu.com/companies?sicsSector=Consumer%20Goods",
     "Extractives & Minerals Processing": "https://nzdpu.com/companies?sicsSector=Extractives%20%26%20Minerals%20Processing",
@@ -28,11 +31,50 @@ sics_sector_urls = {
     "Not Classified by SICS": "https://nzdpu.com/companies?sicsSector=Not%20Classified%20by%20SICS",
 }
 
+AVAILABLE_SECTORS = [
+    "Consumer Goods",
+    "Extractives & Minerals Processing",
+    "Financials",
+    "Food & Beverage",
+    "Health Care",
+    "Infrastructure",
+    "Renewable Resources & Alternative Energy",
+    "Resource Transformation",
+    "Services",
+    "Technology & Communications",
+    "Transportation",
+    "Not Classified by SICS",
+]
+
+
+def match_sector_with_available(sector: str) -> str:
+    prompt = f"""
+    Classify the following sector into one of the following categories: {', '.join(AVAILABLE_SECTORS)}.
+    If it doesn't match, return None.
+    Input: {sector}
+    Output: 
+    """
+    # Make the API call to Gemini (using the OpenAI wrapper as an example for now)
+    model = genai.generativeModel(
+        "gemini-2.0-flash-exp",
+    )
+    response = model.generate_content(prompt)
+    print(response)
+    return response.text.strip()
+
+
+def match_sector_with_available_two(sector: str) -> str:
+    match = difflib.get_close_matches(sector, AVAILABLE_SECTORS, n=0.8, cutoff=0.5)
+    return match[0] if match else None
+
 
 def scrape_nzdpu(sector: str, country: str) -> list[str]:
     """ """
-    if sector not in sics_sector_urls:
-        return []
+    if sector not in AVAILABLE_SECTORS:
+        sector = match_sector_with_available(sector)
+        sector = match_sector_with_available_two(sector)
+        if sector is None:
+            return []
 
     # Set up Chrome options
     chrome_options = webdriver.ChromeOptions()
@@ -55,7 +97,7 @@ def scrape_nzdpu(sector: str, country: str) -> list[str]:
 
     country = country.capitalize()
     nzdpu_url = sics_sector_urls[sector]
-    nzdpu_url += f"&jurisdiction={country}"
+    # nzdpu_url += f"&jurisdiction={country}" # TODO: sort by country
 
     try:
         driver.get(nzdpu_url)
@@ -64,9 +106,29 @@ def scrape_nzdpu(sector: str, country: str) -> list[str]:
         wait = WebDriverWait(driver, 10)
         table = wait.until(
             EC.presence_of_element_located(
-                (By.XPATH, "//tbody[@class='MuiTableBody-root']")
+                (
+                    By.XPATH,
+                    "//table[contains(@class, 'MuiTable-root')]//tbody[contains(@class, 'MuiTableBody-root')]",
+                )
             )
         )
+
+        # Get rows from the table we already found
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        company_names = []
+
+        # Get first 7 rows
+        for row in rows[:7]:
+            try:
+                # Get first cell of each row (company name cell)
+                name_cell = row.find_element(By.TAG_NAME, "td")
+                name = name_cell.text.strip()
+                if name:
+                    company_names.append(name)
+            except:
+                continue
+
+        return company_names[:7]
 
         # MuiTableBody-root
     except:
@@ -88,3 +150,9 @@ if __name__ == "__main__":
     else:
         print("Error: Not enough arguments provided", file=sys.stderr)
         sys.exit(1)
+
+
+"""
+hi! I am a software company based out of chicago; can you help me find how I can stop climate change?
+
+"""
