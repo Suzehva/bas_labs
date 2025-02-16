@@ -15,7 +15,6 @@ class DocumentProcessor:
     def __init__(self):
         self.base_directory = os.path.abspath(".")
         self.csv_directory = os.path.join(self.base_directory, "spreadsheet")
-        
         self.text_splitter = RecursiveCharacterTextSplitter(
             separators=["\n\n", "\n", ". ", "? ", "! "],
             chunk_size=2000,
@@ -65,7 +64,6 @@ class DocumentProcessor:
         for chunk in chunks:
             content = chunk["content"] if isinstance(chunk, dict) else chunk.page_content
             metadata = chunk["metadata"] if isinstance(chunk, dict) else chunk.metadata
-            
             embedding = self.embeddings.embed_query(content)
             embeddings_list.append({
                 "content": content,
