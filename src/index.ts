@@ -288,6 +288,98 @@ const find_UN_initatives: ToolConfig = {
 // END: RAG UN
 
 
+// START: RAG REPORT
+
+const find_company_initiatives: ToolConfig = {
+  id: "companyreports",
+  name: "Find company climate initatives from their sustainability reports",
+  description: "Finds company climate initiatives relevant to THE USER based on its description. Invoke this tool to find climate initiatives relevant to THE USER based on other companies sustainability reports.",
+  input: z
+    .object({
+      search_query: z.string().describe("A description of THE USER's climate aspirations and some brainstormed initiatives."),
+    })
+    .describe("The input should elaborate on the sustainability goals of THE USER and imagine possible actions with return on investment the user can take to be matched in real life with company efforts."),
+  output: z
+    .object({
+      climate_initatives: z.array(z.object({
+        company_name: z.string(),
+        source_url: z.string(),
+        year: z.string(),
+        page: z.string(),
+        content: z.string(),
+      }).describe("List of company climate initatives from their sustainability reports, including the source report URL, page number, year, and report content.")),
+    }),
+  pricing: { pricePerUse: 0, currency: "USD" },
+
+  handler: async ({ search_query }, agentInfo, context) => {
+    console.log(
+      `User / Agent ${agentInfo.id} requested information COMPANY REPORTS for search query ${search_query}`
+    );
+
+
+    function call_rag_reports(search_query: string): Promise<Array<{ [key: string]: string }>> {
+      const options: PythonShellOptions = {
+        args: [search_query],
+      };
+      const scriptPath = path.join(__dirname, 'call_rag_reports.py');
+
+      return PythonShell.run(scriptPath, options) // Using Promise-based API
+        .then((result) => {
+          // Since result is an array of strings (one for each printed line),
+          // we join them together
+          return JSON.parse(result.join(''));
+        })
+        .catch((err) => {
+          console.error("Error executing Python script:", err);
+          throw err; 2
+        });
+    }
+
+
+    let report_matches: Array<{ [key: string]: string }>;
+    try {
+      report_matches = await call_rag_reports(search_query);  // Ensure the return type from the function matches
+      console.log("Python script result:", report_matches);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    // const cardListUI = new CardListUIBuilder()
+    //   .title("UNFCC Cooperative Climate Initiatives")  // Optional
+    //   .description("Explore coordinated efforts by multiple stakeholders collaborating to achieve a clearly defined climate goal.")  // Optional
+    //   .addCards(report_matches.map(init => ({
+    //     title: init.title,
+    //     description: init.description,
+    //     icon: "scale"
+    //   })))
+    //   .build();
+
+    // return new DainResponse({
+    //   text: "This returns the top UNFCC climate initatives relevant to THE USER",
+    //   data: {
+    //     climate_initatives: UN_initatives,
+    //   },
+    //   ui: cardListUI
+    // });
+
+    const super_basic_UI = new CardUIBuilder()
+      //.title(`Climate Initiatives for ${companyName}`)
+      //.content(company_info)
+      .build();
+
+    return new DainResponse({
+      text: `This returns top reported company initiatives based on their sustainability reporting relevant to THE USER. Make sure to include the source url and page number for any results you build upon.`,
+      data: {
+        climate_initatives: report_matches,
+      },
+      ui: super_basic_UI,
+    });
+  },
+};
+
+// END: RAG REPORT
+
+
 
 interface ServiceContext {
   id: string;              // Unique identifier
@@ -342,7 +434,7 @@ const dainService = defineDAINService({
     apiKey: process.env.DAIN_API_KEY,
   },
   // tools: [find_company_climate_initiatives, find_similar_companies, find_UN_initatives],
-  tools: [find_UN_initatives],
+  tools: [find_company_initiatives],
 });
 
 dainService.startNode({ port: 2022 }).then(() => {

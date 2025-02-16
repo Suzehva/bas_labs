@@ -24,6 +24,7 @@ class BAS_Database:
 
         # Tables
         self.un_table = "BASLABS.UNClimateAction"
+        self.report_table = "BASLABS.ClimateReportsEmbed"
 
         # Embeddings
         self.embed_minilm = SentenceTransformer("all-MiniLM-L6-v2")
@@ -65,3 +66,28 @@ class BAS_Database:
         return [
             dict(title=row[0], summary=row[1], description=row[2]) for row in results
         ]
+
+    def get_report_section(self, search_query, n=5):
+        if not self.conn:
+            self.connect()
+        search_vector = self.embed_nvidia.embed_query(search_query)
+        sql = f"""
+            SELECT TOP ? company_name, source_url, year, page, content
+            FROM {self.report_table}
+            ORDER BY VECTOR_DOT_PRODUCT(content_embedding, TO_VECTOR(?)) DESC
+        """
+        self.cursor.execute(sql, [n, str(search_vector)])
+        results = self.cursor.fetchall()
+        return [
+            dict(
+                company_name=row[0],
+                source_url=row[1],
+                year=str(row[2]),
+                page=str(row[3]),
+                content=row[4],
+            )
+            for row in results
+        ]
+
+
+# Hi! I'm a tech company in united states looking to reduce our emissions. We specialize in software development and run quite big data centers
