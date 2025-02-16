@@ -12,6 +12,7 @@ import json
 # url https://nzdpu.com/companies?sicsSector=Consumer%20Goods
 
 
+#
 sics_sector_urls = {
     "Consumer Goods": "https://nzdpu.com/companies?sicsSector=Consumer%20Goods",
     "Extractives & Minerals Processing": "https://nzdpu.com/companies?sicsSector=Extractives%20%26%20Minerals%20Processing",
