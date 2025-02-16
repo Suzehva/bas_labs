@@ -138,11 +138,16 @@ const find_similar_companies: ToolConfig = {
   id: "nzdpu",
   name: "Find similar companies",
   description: "Finds companies similar to the company we are researching by using information about the sector and country the company is in. Use in combination with find_company_climate_initiatives to find what companies similar to the one we are researching are doing for their climate initiatives.",
-  input: z
-    .object({
-      sector: z.string().describe("Sector the company is in"),
-      country: z.string().describe("Country the company is located in"),
-    })
+  input: z.object({
+    sector: z.string().describe(
+      "Sector the company is in. NEEDS TO BE one of [\"Consumer Goods\", \"Extractives & Minerals Processing\", " +
+      "\"Financials\", \"Food & Beverage\", \"Health Care\", \"Infrastructure\", " +
+      "\"Renewable Resources & Alternative Energy\", \"Resource Transformation\", \"Services\", " +
+      "\"Technology & Communications\", \"Transportation\", \"Not Classified by SICS\"]"
+    ),
+    country: z.string().describe("Country the company is located in"),
+  })
+  
     .describe("Input parameters for the similar companies request. If a company is located in multiple countries, ask user to provide only one"),
   output: z
     .object({
@@ -341,8 +346,8 @@ const dainService = defineDAINService({
   identity: {
     apiKey: process.env.DAIN_API_KEY,
   },
-  // tools: [find_company_climate_initiatives, find_similar_companies, find_UN_initatives],
-  tools: [find_UN_initatives],
+  //tools: [find_company_climate_initiatives, find_similar_companies, find_UN_initatives],
+  tools: [find_similar_companies],
 });
 
 dainService.startNode({ port: 2022 }).then(() => {
