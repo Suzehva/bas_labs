@@ -97,7 +97,7 @@ if __name__ == "__main__":
         company_name = sys.argv[1]
         try:
             content = scrape_netzero_data(company_name)
-            #print(content)  # This will be returned to JavaScript
+            print(content)  # This will be returned to JavaScript
         except Exception as e:
             print(f"Error: {str(e)}", file=sys.stderr)
             sys.exit(1)

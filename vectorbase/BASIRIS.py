@@ -48,3 +48,7 @@ class BASDatabase:
         return [
             dict(title=row[0], summary=row[1], description=row[2]) for row in results
         ]
+
+
+if __name__ == "__main__":
+    # TODO
