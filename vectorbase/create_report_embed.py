@@ -22,6 +22,7 @@ import requests
 from io import BytesIO
 import time
 import multiprocessing
+import re
 
 
 # This function will be executed in the subprocess
@@ -106,8 +107,16 @@ def insert_df(doc_df):
 # Ensure the multiprocessing code runs only when executed directly
 if __name__ == "__main__":
 
+    def company_year_exists(company_name, year):
+        query = f"""
+        SELECT COUNT(*) FROM {embedTableName} WHERE company_name = ? AND year = ?
+        """
+        cursor.execute(query, (company_name, year))
+        result = cursor.fetchone()
+        return result[0] > 0
+
     ##### PARAMETERS
-    CREATE_TABLE = True
+    CREATE_TABLE = False
     TIMEOUT = 5
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -163,15 +172,43 @@ if __name__ == "__main__":
         cursor.execute(f"CREATE TABLE {embedTableName} {tableDefinition}")
 
     # OPEN
-    link_df = pd.read_csv("data/tech_reports.csv")
+    # link_df = pd.read_csv("data/tech_reports.csv")
+    with open("spreadsheet/pdf_links.txt") as f:
+        links = f.read().split("\n")
 
     i = 0
-    for index, row in link_df.iterrows():
+    # for index, row in link_df.iterrows():
+    for link in links:
 
-        company_name = row["company_name"]
-        year = row["year"]
-        source_url = row["report_url"]
-        print("Processing", company_name)
+        # company_name = row["company_name"]
+        # year = row["year"]
+        # source_url = row["report_url"]
+        company_match = re.search(
+            r"([\w-]+)\.(com|gov|org|net|edu|co|io|us|uk|ca|au)", link
+        )
+        if company_match:
+            company_name = company_match.group(1)
+        else:
+            company_name = ""
+
+        year_match = re.search(r"(\d{4})\b", link)
+        if year_match:
+            year = year_match.group(0)
+        else:
+            year = ""
+
+        source_url = link
+
+        if year == "" or company_name == "" or int(year) < 2000 or int(year) > 2025:
+            continue
+
+        if company_year_exists(company_name, year):
+            print(f"Skipping {company_name} ({year}), already in database.")
+            continue
+
+        break
+
+        print(f"Company: {company_name}, year: {year}, link: {source_url}")
 
         docs = get_docs(source_url)
         if docs == None:
@@ -179,7 +216,3 @@ if __name__ == "__main__":
         print(f"Found {len(docs)} docs")
         doc_df = get_df(docs, company_name, year, source_url)
         insert_df(doc_df)
-
-        i += 1
-        if i == 10:
-            break
