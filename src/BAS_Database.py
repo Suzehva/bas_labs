@@ -18,7 +18,6 @@ class BAS_Database:
         port = "1972"
         namespace = "USER"
         CONNECTION_STRING = f"{hostname}:{port}/{namespace}"
-        print(CONNECTION_STRING)
 
         self.conn = iris.connect(CONNECTION_STRING, username, password)
         self.cursor = self.conn.cursor()

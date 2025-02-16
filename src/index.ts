@@ -2,6 +2,7 @@ import { arrayOutputType, z } from "zod";
 import axios from "axios";
 import { PythonShell } from 'python-shell';
 import * as path from 'path';
+
 // require('dotenv').config({ path: '.env.treehacks' });
 
 // const apiKey = process.env.DAIN_API_KEY;
@@ -22,8 +23,9 @@ import {
   ToolConfig,
 } from "@dainprotocol/service-sdk";
 
-import { DainResponse, CardUIBuilder, TableUIBuilder, MapUIBuilder, LayoutUIBuilder } from "@dainprotocol/utils";
+import { DainResponse, CardUIBuilder, TableUIBuilder, MapUIBuilder, LayoutUIBuilder, CardListUIBuilder } from "@dainprotocol/utils";
 import { AgentInfo } from "@dainprotocol/service-sdk";
+
 
 const find_company_climate_initiatives: ToolConfig = {
   id: "net_zero_tracker",
@@ -250,18 +252,36 @@ const find_UN_initatives: ToolConfig = {
       console.error("Error:", error);
     }
 
-    const super_basic_UI = new CardUIBuilder()
-      //.title(`Climate Initiatives for ${companyName}`)
-      //.content(company_info)
+    const cardListUI = new CardListUIBuilder()
+      .title("UNFCC Cooperative Climate Initiatives")  // Optional
+      .description("Explore coordinated efforts by multiple stakeholders collaborating to achieve a clearly defined climate goal.")  // Optional
+      .addCards(UN_initatives.map(init => ({
+        title: init.title,
+        description: init.description,
+        icon: "scale"
+      })))
       .build();
 
     return new DainResponse({
-      text: `This returns the top climate initatives from the UN corporate climate initatives database relevant to THE USER`,
+      text: "This returns the top UNFCC climate initatives relevant to THE USER",
       data: {
         climate_initatives: UN_initatives,
       },
-      ui: super_basic_UI,
+      ui: cardListUI
     });
+
+    // const super_basic_UI = new CardUIBuilder()
+    //   //.title(`Climate Initiatives for ${companyName}`)
+    //   //.content(company_info)
+    //   .build();
+
+    // return new DainResponse({
+    //   text: `This returns the top climate initatives from the UN corporate climate initatives database relevant to THE USER`,
+    //   data: {
+    //     climate_initatives: UN_initatives,
+    //   },
+    //   ui: super_basic_UI,
+    // });
   },
 };
 
@@ -321,7 +341,8 @@ const dainService = defineDAINService({
   identity: {
     apiKey: process.env.DAIN_API_KEY,
   },
-  tools: [find_company_climate_initiatives, find_similar_companies, find_UN_initatives],
+  // tools: [find_company_climate_initiatives, find_similar_companies, find_UN_initatives],
+  tools: [find_UN_initatives],
 });
 
 dainService.startNode({ port: 2022 }).then(() => {

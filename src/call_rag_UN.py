@@ -5,13 +5,12 @@ from BAS_Database import BAS_Database
 
 # Hello I am an agroforestry service based in the Netherlands and we would like some UN climate initiative to join
 
-db = BAS_Database()
-
 
 def call_rag_UN(search_query: str) -> list[dict]:
     """
     Perform RAG embeddings for UN initative data.
     """
+    db = BAS_Database()
     result = db.get_un_initative(search_query)
     return result
 
