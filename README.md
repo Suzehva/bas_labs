@@ -1,3 +1,7 @@
+## BAS Buddy: AI-Agent for Climate Initiative Matching
+
+[![Watch Video](https://placehold.co/600x400?text=Click+to+Watch)](https://share.descript.com/view/JjI5tob8La9)
+
 ## Inspiration
 
 Mitigating climate change is only possible through a patchwork of collective action. The future of our planet will be determined by our ability to radically change previous destructive corporate processes. However, companies can often struggle to find concrete solutions and actions to reduce their carbon footprint while advancing their business goals. 
