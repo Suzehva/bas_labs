@@ -1,6 +1,11 @@
 ## BAS Buddy: AI-Agent for Climate Initiative Matching
+An ggentic system leveraging custom database to connect companies with climate initiatives.
 
-[![Watch Video](https://placehold.co/600x400?text=Click+to+Watch)](https://share.descript.com/view/JjI5tob8La9)
+<img src="bas_labs_in_action.jpg" alt="Bas Labs in Action" width="50%" />
+
+[Watch our video here](https://share.descript.com/view/JjI5tob8La9)
+
+
 
 ## Inspiration
 
