@@ -1,5 +1,5 @@
 ## BAS Buddy: AI-Agent for Climate Initiative Matching
-An ggentic system leveraging custom database to connect companies with climate initiatives.
+An agentic system leveraging custom database to connect companies with climate initiatives.
 
 <img src="bas_labs_in_action.jpg" alt="Bas Labs in Action" width="50%" />
 
